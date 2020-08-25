@@ -1,26 +1,31 @@
-import { addUserCtl, getAllUsersCtl } from './controllers';
-import * as services from './services';
+import UserControllers from './controllers';
 import { Request, Response } from 'express';
-import { mocked } from 'ts-jest/utils';
+import { User } from './models';
 
-// Here we explicitly mock the services
-jest.mock('./services');
+// const mockUsers = [
+//   {
+//     firstName: "First#1",
+//     lastName: "Last#1",
+//     email: "email1@test.com"
+//   },
+//   {
+//     firstName: "First#2",
+//     lastName: "Last#2",
+//     email: "email2@test.com"
+//   },
+// ];
 
-// ts-jest mocked is a helper function that return a mock object with module's typings.
-// Without it, we have to use type assertion for the module.
-const mockedServices = mocked(services);
 const mockUsers = [
-  {
-    firstName: "First#1",
-    lastName: "Last#1",
-    email: "email1@test.com"
-  },
-  {
-    firstName: "First#2",
-    lastName: "Last#2",
-    email: "email2@test.com"
-  },
+  new User('First#1', 'Last#1', 'email1@test.com'),
+  new User('First#2', 'Last#2', 'email2@test.com'),
 ];
+
+const mockedServices = {
+  getAllUsers: jest.fn(),
+  addUser: jest.fn()
+}
+
+const userControllers = UserControllers(mockedServices);
 
 describe('userControllers', () => {
   afterEach(() => {
@@ -32,7 +37,7 @@ describe('userControllers', () => {
     let req = {} as Request, res = {} as Response;
     res.send = jest.fn();
 
-    getAllUsersCtl(req, res);
+    userControllers.getAllUsers(req, res);
     expect(mockedServices.getAllUsers).toHaveBeenCalled();
     expect(res.send).toHaveBeenCalledWith(mockUsers);
   });
@@ -42,7 +47,7 @@ describe('userControllers', () => {
     req.body = mockUsers[0];
     res.send = jest.fn();
 
-    addUserCtl(req, res);
+    userControllers.addUser(req, res);
     expect(mockedServices.addUser).toHaveBeenCalledTimes(1);
     expect(res.send).toHaveBeenCalled();
   });
