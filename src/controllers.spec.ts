@@ -2,6 +2,7 @@ import { addUserCtl, getAllUsersCtl } from './controllers';
 import * as services from './services';
 import { Request, Response } from 'express';
 import { mocked } from 'ts-jest/utils';
+import { User } from './models';
 
 // Here we explicitly mock the services
 jest.mock('./services');
@@ -9,17 +10,10 @@ jest.mock('./services');
 // ts-jest mocked is a helper function that return a mock object with module's typings.
 // Without it, we have to use type assertion for the module.
 const mockedServices = mocked(services);
+
 const mockUsers = [
-  {
-    firstName: "First#1",
-    lastName: "Last#1",
-    email: "email1@test.com"
-  },
-  {
-    firstName: "First#2",
-    lastName: "Last#2",
-    email: "email2@test.com"
-  },
+  new User('First#1', 'Last#1', 'email1@test.com'),
+  new User('First#2', 'Last#2', 'email2@test.com'),
 ];
 
 describe('userControllers', () => {
